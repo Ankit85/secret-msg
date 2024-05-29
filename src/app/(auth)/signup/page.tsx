@@ -20,52 +20,74 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { signInSchema } from "@/schemas/SignInSchema";
-import { signIn } from "next-auth/react";
 
 function Signup() {
+  const [username, setUsername] = useState("");
+  const [usernameMesssage, setUsernameMessage] = useState("");
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
+  const debounced = useDebounceCallback(setUsername, 300);
 
-  const form = useForm<z.infer<typeof signInSchema>>({
-    resolver: zodResolver(signInSchema),
+  const form = useForm<z.infer<typeof signupSchema>>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
+      username: "",
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+  const onSubmit = async (data: z.infer<typeof signupSchema>) => {
     setIsSubmitting(true);
     try {
-      const response = await signIn("credentials", {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      });
-      console.log("Respine", response);
-      /* toast({
-        title: "Sign in Successfull",
-        description: "s",
+      const response = await axios.post<ApiResponse>("/api/signup", data);
+      console.log("response", response);
+      toast({
+        title: "Sign up Successfull",
+        description: response.data.message,
         variant: "default",
       });
-      router.push(`/dashboard`); */
+      router.push(`/verify/${username}`);
     } catch (error) {
-      /*  const axiosError = error as Nex;
+      const axiosError = error as AxiosError<ApiResponse>;
       const errorMsg =
         axiosError.response?.data.message ??
-        "There was a problem while sign in. Please try again.";
+        "There was a problem while sign up. Please try again.";
       toast({
-        title: "Sign in failed",
+        title: "Sign up failed",
         description: errorMsg,
         variant: "destructive",
-      }); */
+      });
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    const checkUniqueUsername = async () => {
+      if (username) {
+        setIsCheckingUsername(true);
+        setUsernameMessage("");
+        try {
+          const result = await axios.get<ApiResponse>(
+            `/api/check-unique-username?username=${username}`
+          );
+          setUsernameMessage(result.data.message);
+        } catch (error) {
+          const axiosError = error as AxiosError<ApiResponse>;
+          setUsernameMessage(
+            axiosError.response?.data.message ?? "Failed to fetch username"
+          );
+        } finally {
+          setIsCheckingUsername(false);
+        }
+      }
+    };
+    checkUniqueUsername();
+  }, [username]);
 
   return (
     <div
@@ -93,12 +115,54 @@ function Signup() {
             >
               <FormField
                 control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your username"
+                        {...field}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          debounced(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    {isCheckingUsername && (
+                      <div>
+                        <Loader2 className="animate-spin" />
+                      </div>
+                    )}
+                    {!isCheckingUsername && usernameMesssage && (
+                      <p
+                        className={`text-sm font-semibold
+                      ${
+                        usernameMesssage == "Username is available"
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                      >
+                        {usernameMesssage}
+                      </p>
+                    )}
+
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="Enter your email" {...field} />
+                      <Input
+                        type="email"
+                        placeholder="Enter your email"
+                        {...field}
+                      />
                     </FormControl>
 
                     <FormMessage />
@@ -134,13 +198,9 @@ function Signup() {
                     <Loader2 className="animate-spin mr-2" /> Please wait
                   </>
                 ) : (
-                  "Sign in"
+                  "Create Account"
                 )}
               </Button>
-              {/* <p className="text-xs mt-4">
-                By signing up, you agree to our terms, acceptable use, and
-                privacy policy.
-              </p> */}
               <p className="text-xs mt-4">
                 By signing up, you agree to our terms, acceptable use, and
                 privacy policy.

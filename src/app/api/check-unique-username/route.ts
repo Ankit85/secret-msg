@@ -8,9 +8,8 @@ const usernameQuerySchema = z.object({
   username: usernameValidation,
 });
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   await connectToDB();
-
   try {
     const searchParams = request.nextUrl.searchParams.get("username");
     const result = usernameQuerySchema.safeParse({ username: searchParams });
