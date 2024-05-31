@@ -29,6 +29,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "./ui/use-toast";
 
 type MessageProps = {
+  
   message: Message;
   onMessageDelete: (messageid: String) => void;
 };

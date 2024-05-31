@@ -50,7 +50,7 @@ export default function DashboardPage() {
     }
   };
 
-  const handleDeleteMsg = (msgId: string) => {
+  const handleDeleteMsg = (msgId: String) => {
     setMessages(messages.filter((msg) => msg._id != msgId));
   };
 
@@ -170,7 +170,7 @@ export default function DashboardPage() {
           {messages.length > 0 ? (
             messages.map((msg, i) => (
               <MessageCard
-                key={msg._id}
+                key={String(msg._id)}
                 message={msg}
                 onMessageDelete={handleDeleteMsg}
               />
