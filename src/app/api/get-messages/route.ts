@@ -26,7 +26,7 @@ export async function GET() {
   }
 
   const userId = new mongoose.Types.ObjectId(_user._id);
-  console.log("USER ID", userId);
+
   try {
     const user = await UserModel.aggregate([
       { $match: { _id: userId } },
@@ -39,7 +39,6 @@ export async function GET() {
         },
       },
     ]);
-    console.log("USER after exec", user);
     if (!user || user.length === 0) {
       return Response.json(
         { success: false, message: "User not found" },
@@ -47,7 +46,6 @@ export async function GET() {
       );
     }
 
-    console.log("User messages object", user[0].messages);
     return Response.json(
       {
         success: true,

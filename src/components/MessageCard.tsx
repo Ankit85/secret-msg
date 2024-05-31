@@ -24,11 +24,13 @@ import {
 import { Message } from "@/model/User";
 import { X } from "lucide-react";
 import { Button } from "./ui/button";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+import { ApiResponse } from "@/types/ApiResponse";
+import { toast } from "./ui/use-toast";
 
 type MessageProps = {
   message: Message;
-  onMessageDelete: (messageId: string) => void;
+  onMessageDelete: (messageid: String) => void;
 };
 
 export default function MessageCard({
@@ -36,21 +38,31 @@ export default function MessageCard({
   onMessageDelete,
 }: MessageProps) {
   const handleDelete = async () => {
-    const response = await axios.delete(`/api/delete-message/${message.id}`);
-    console.log("response", response);
-    if (onMessageDelete) {
-      onMessageDelete(message?.id);
+    try {
+      const result = await axios.delete<ApiResponse>(
+        `/api/delete-message/${message._id}`
+      );
+      console.log("response", result.data.success);
+      console.log("messafge id", message._id);
+      onMessageDelete(message._id as String);
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast({
+        title: "Error",
+        description:
+          axiosError.response?.data.message ?? "Something went wrong",
+      });
     }
   };
 
   return (
-    <Card className="m-2">
+    <Card className="mr-2 mb-2">
       <CardHeader>
         <div className="flex flex-row  justify-between">
           <CardTitle>{message.content}</CardTitle>
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant={"destructive"}>
+              <Button className="ml-2" variant={"destructive"}>
                 <X />
               </Button>
             </AlertDialogTrigger>

@@ -8,6 +8,7 @@ import connectToDB from "@/lib/dbConnect";
 import { User, getServerSession } from "next-auth";
 import authOptions from "../auth/[...nextauth]/options";
 import UserModel from "@/model/User";
+import mongoose from "mongoose";
 
 export async function POST(request: Request) {
   await connectToDB();
@@ -68,23 +69,21 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   await connectToDB();
+  const session = await getServerSession(authOptions);
+  const user: User = session?.user;
+
+  if (!session || !user) {
+    return Response.json(
+      {
+        success: false,
+        message: "Not an Authenticated User",
+      },
+      { status: 400 }
+    );
+  }
   try {
-    const session = await getServerSession(authOptions);
-    const user: User = session?.user;
-
-    if (!session || !user) {
-      return Response.json(
-        {
-          success: false,
-          message: "Not an Authenticated User",
-        },
-        { status: 400 }
-      );
-    }
-
     const userId = user._id;
-
-    const foundUser = await UserModel.findById({ userId });
+    const foundUser = await UserModel.findById({ _id: userId });
 
     if (!foundUser) {
       // User not found

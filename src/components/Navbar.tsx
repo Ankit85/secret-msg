@@ -9,9 +9,9 @@ function Navbar() {
   const { data: session } = useSession();
 
   return (
-    <div className="flex h-14 container items-center justify-between  ">
+    <div className="container flex h-14 items-center justify-between  ">
       <a href="#">
-        <h1 className="font-bold">Anon</h1>
+        <h1 className="font-bold text-xl">Anon</h1>
       </a>
       <div className="flex gap-5">
         {session ? (

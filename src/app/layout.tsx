@@ -24,15 +24,14 @@ export default function RootLayout({
         <Toaster />
 
         <AuthProvider>
-          {" "}
-          {/* <ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          > */}
+          >
             {children}{" "}
-          {/* </ThemeProvider> */}
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

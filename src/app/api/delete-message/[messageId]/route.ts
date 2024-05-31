@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { messageId: string } }
+  { params }: { params: { messageid: string } }
 ) {
   await connectToDB();
 
@@ -23,8 +23,8 @@ export async function DELETE(
     );
   }
 
-  const messageId = params.messageId;
-  console.log("URLLL", messageId);
+  const messageId = params.messageid;
+  console.log("Delete mesg id", messageId);
 
   //check if message exist
   //   if not return
