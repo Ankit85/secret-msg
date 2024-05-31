@@ -45,12 +45,20 @@ function Signup() {
     try {
       const response = await axios.post<ApiResponse>("/api/signup", data);
       console.log("response", response);
-      toast({
-        title: "Sign up Successfull",
-        description: response.data.message,
-        variant: "default",
-      });
-      router.push(`/verify/${username}`);
+      if (response.data.success) {
+        toast({
+          title: "Sign up Successfull",
+          description: response.data.message,
+          variant: "default",
+        });
+        router.push(`/verify/${username}`);
+      } else {
+        toast({
+          title: "Sign up failed",
+          description: response.data.message,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       const errorMsg =

@@ -46,13 +46,18 @@ function Signup() {
         password: data.password,
       });
       console.log("Respine", response);
-      /* toast({
-        title: "Sign in Successfull",
-        description: "s",
-        variant: "default",
-      });
-      router.push(`/dashboard`); */
+
+      if (response?.url) {
+        router.push(`/dashboard`);
+      } else {
+        toast({
+          title: "Sign in Failed",
+          description: response?.error,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
+      console.log("Sign in error", error);
       /*  const axiosError = error as Nex;
       const errorMsg =
         axiosError.response?.data.message ??
