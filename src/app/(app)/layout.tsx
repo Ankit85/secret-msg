@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="container min-h-screen ">
+    <div className="min-h-screen ">
       <Navbar />
       {children}
       <Footer />
