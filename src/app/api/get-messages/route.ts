@@ -39,6 +39,8 @@ export async function GET() {
         },
       },
     ]);
+
+    console.log("user", user);
     if (!user || user.length === 0) {
       return Response.json(
         { success: false, message: "User not found" },

@@ -11,7 +11,7 @@ function Navbar() {
   return (
     <div className="container flex h-14 items-center justify-between  ">
       <a href="#">
-        <h1 className="font-bold text-xl">Anon</h1>
+        <h1 className="font-bold text-xl">Secret Sender</h1>
       </a>
       <div className="flex gap-5">
         {session ? (
