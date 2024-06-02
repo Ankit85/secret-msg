@@ -20,6 +20,7 @@ import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function Signup() {
   const [username, setUsername] = useState("");
@@ -111,8 +112,16 @@ function Signup() {
             strokeWidth={2.5}
             absoluteStrokeWidth
           />
-          <h1 className="text-xl p-1 font-semibold ">Create a Anon account </h1>
-          <p className="text-sm ">Send anonymous message to your friends</p>
+          <h1 className="text-xl font-semibold ">
+            Create a SecretSender account{" "}
+          </h1>
+          <p className="text-md text-gray-400 my-1">
+            Already have an account?{" "}
+            <Link className="text-blue-500" href="/signin">
+              Sign in
+            </Link>
+          </p>
+          {/* <p className="text-sm ">Send anonymous message to your friends</p> */}
         </div>
         <div className="  px-6 w-screen  max-w-lg">
           {/* form */}

@@ -85,7 +85,7 @@ export default function DashboardPage() {
       const result = await axios.get<ApiResponse>("/api/accept-messages");
       setValue("acceptMessages", result.data.isAcceptingMessage);
       toast({
-        title: "Fetched Accept Message status",
+        title: result.data.message,
         description: result.data.message,
       });
     } catch (error) {
@@ -122,7 +122,7 @@ export default function DashboardPage() {
     });
   };
   return (
-    <div className="mt-6  container">
+    <div className="mt-6  container ">
       {/* title */}
       <h1 className="text-3xl font-bold">User Dashboard</h1>
       {/* Copy Profile link   */}

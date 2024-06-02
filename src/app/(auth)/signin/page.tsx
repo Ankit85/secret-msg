@@ -9,19 +9,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signupSchema } from "@/schemas/SignupSchema";
-import React, { useEffect, useState } from "react";
+
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleSlash, Loader2 } from "lucide-react";
-import { useDebounceCallback } from "usehooks-ts";
-import axios, { AxiosError } from "axios";
-import { ApiResponse } from "@/types/ApiResponse";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { signInSchema } from "@/schemas/SignInSchema";
-import { signIn } from "next-auth/react";
+import { SignInResponse, signIn } from "next-auth/react";
+import Link from "next/link";
 
 function Signup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,28 +43,27 @@ function Signup() {
         email: data.email,
         password: data.password,
       });
-      console.log("Respine", response);
-
+      console.log("sigin respobnse rtto", response);
       if (response?.url) {
         router.push(`/dashboard`);
       } else {
         toast({
-          title: "Sign in Failed",
+          title: "Sign innn Failed",
           description: response?.error,
           variant: "destructive",
         });
       }
     } catch (error) {
       console.log("Sign in error", error);
-      /*  const axiosError = error as Nex;
+      const axiosError = error as SignInResponse;
       const errorMsg =
-        axiosError.response?.data.message ??
+        axiosError.error ??
         "There was a problem while sign in. Please try again.";
       toast({
-        title: "Sign in failed",
+        title: "Sign  failed",
         description: errorMsg,
         variant: "destructive",
-      }); */
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -86,9 +83,18 @@ function Signup() {
             strokeWidth={2.5}
             absoluteStrokeWidth
           />
-          <h1 className="text-xl p-1 font-semibold ">Create a Anon account </h1>
-          <p className="text-sm ">Send anonymous message to your friends</p>
+          <h1 className="text-xl font-semibold ">
+            Create a SecretSender account{" "}
+          </h1>
+          <p className="text-md text-gray-400 my-1">
+            {" "}
+            Don&apos;t have an account?{" "}
+            <Link className="text-blue-500" href="/signup">
+              Sign up
+            </Link>
+          </p>
         </div>
+
         <div className="  px-6 w-screen  max-w-lg">
           {/* form */}
           <Form {...form}>
@@ -142,16 +148,13 @@ function Signup() {
                   "Sign in"
                 )}
               </Button>
-              {/* <p className="text-xs mt-4">
-                By signing up, you agree to our terms, acceptable use, and
-                privacy policy.
-              </p> */}
-              <p className="text-xs mt-4">
-                By signing up, you agree to our terms, acceptable use, and
-                privacy policy.
-              </p>
             </form>
           </Form>
+
+          <p className="text-xs mt-4">
+            By signing up, you agree to our terms, acceptable use, and privacy
+            policy.
+          </p>
         </div>
       </div>
     </div>
