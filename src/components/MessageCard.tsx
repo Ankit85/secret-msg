@@ -42,6 +42,8 @@ export default function MessageCard({
       const result = await axios.delete<ApiResponse>(
         `/api/delete-message/${message._id}`
       );
+      console.log("delete id", message._id);
+      console.log("delete id", result);
       onMessageDelete(message._id as String);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
