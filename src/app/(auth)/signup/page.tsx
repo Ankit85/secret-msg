@@ -218,9 +218,9 @@ function Signup() {
                   "Create Account"
                 )}
               </Button>
-              <p className="text-xs mt-4">
-                By signing up, you agree to our terms, acceptable use, and
-                privacy policy.
+              <p className="text-xs mt-4 text-gray-400">
+                By signing in, you agree to our <a href="" className="text-blue-500"> Terms of Service</a>{" "}
+                and <a href="" className="text-blue-500"> Privacy Policy</a>.
               </p>
             </form>
           </Form>

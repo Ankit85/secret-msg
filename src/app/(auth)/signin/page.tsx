@@ -151,9 +151,19 @@ function Signup() {
             </form>
           </Form>
 
-          <p className="text-xs mt-4">
-            By signing up, you agree to our terms, acceptable use, and privacy
-            policy.
+          <p className="text-xs mt-4 text-gray-400">
+            By signing up, you agree to our{" "}
+            <a className="text-blue-500" href="/signin">
+              terms{" "}
+            </a>{" "}
+            ,
+            <a className="text-blue-500" href="/signin">
+              acceptable use
+            </a>
+            , and{" "}
+            <a className="text-blue-500" href="/signin">
+              privacy policy.
+            </a>
           </p>
         </div>
       </div>

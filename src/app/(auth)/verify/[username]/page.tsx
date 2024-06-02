@@ -7,12 +7,14 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
 
 export default function InputOTPControlled() {
   const [value, setValue] = useState("");
@@ -51,12 +53,19 @@ export default function InputOTPControlled() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen ">
-      <InputOTP
+    <div className="flex flex-col justify-center items-center min-h-screen space-y-4 w-fit  mx-auto">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold">Verify Your Account</h1>
+        <p className="text-sm text-gray-300">
+          Enter Verification code sent to your email
+        </p>
+      </div>
+      <Input
         maxLength={6}
         value={value}
-        onChange={(value) => setValue(value)}
-      >
+        onChange={(e) => setValue(e.target.value)}
+      />
+      {/* <InputOTP>
         <InputOTPGroup className="mx-auto">
           <InputOTPSlot index={0} />
           <InputOTPSlot index={1} />
@@ -65,14 +74,8 @@ export default function InputOTPControlled() {
           <InputOTPSlot index={4} />
           <InputOTPSlot index={5} />
         </InputOTPGroup>
-      </InputOTP>
-      <div className="text-center text-sm">
-        {value === "" ? (
-          <>Enter your one-time password.</>
-        ) : (
-          <>You entered: {value}</>
-        )}
-      </div>
+      </InputOTP> */}
+
       <Button
         onClick={verifyCode}
         // variant={"outline"}
@@ -82,10 +85,10 @@ export default function InputOTPControlled() {
       >
         {buttonDisabled ? (
           <>
-            <Loader2 className="animate-spin mr-2" /> Verifying Code Please wait
+            <Loader2 className="animate-spin mr-2" /> Verifying Code
           </>
         ) : (
-          "Verify Code"
+          "Verify"
         )}
       </Button>
     </div>
