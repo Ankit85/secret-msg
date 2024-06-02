@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import MessageCard from "@/components/MessageCard";
 import { Message } from "@/model/User";
 import axios, { AxiosError } from "axios";
@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { acceptSchema } from "@/schemas/AcceptMessageSchema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -20,6 +21,8 @@ export default function DashboardPage() {
 
   const { data: session } = useSession();
   const { toast } = useToast();
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const ref = useRef<HTMLInputElement>(null);
 
   const form = useForm({
     resolver: zodResolver(acceptSchema),
@@ -35,7 +38,9 @@ export default function DashboardPage() {
         acceptMessages: !acceptMessages,
       });
       setValue("acceptMessages", !acceptMessages);
-      toast({ title: "", description: result.data.message });
+      toast({
+        title: "Message acceptance status updated successfully",
+      });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -55,28 +60,33 @@ export default function DashboardPage() {
   };
 
   //get All messages
-  const getAllMessages = useCallback(async () => {
-    setLoadingMessages(true);
-    try {
-      const response = await axios.get<ApiResponse>("/api/get-messages");
-      if (response.data.messages) {
-        setMessages(response.data.messages);
+  const getAllMessages = useCallback(
+    async (refresh: boolean = false) => {
+      setLoadingMessages(true);
+      setIsSwitchLoading(true);
+      try {
+        const response = await axios.get<ApiResponse>("/api/get-messages");
+        setMessages(response.data.messages || []);
+        if (refresh) {
+          toast({
+            title: "Refreshed Messages",
+            description: "Showing latest messages",
+          });
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
         toast({
-          title: "Latest messages Fetched",
-          // description: "Message fetched.",
+          title: "Error",
+          description: axiosError.response?.data.message,
+          variant: "destructive",
         });
+      } finally {
+        setLoadingMessages(false);
+        setIsSwitchLoading(false);
       }
-    } catch (error) {
-      const axiosError = error as AxiosError<ApiResponse>;
-      toast({
-        title: "Failed message",
-        description: axiosError.response?.data.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoadingMessages(false);
-    }
-  }, [toast]);
+    },
+    [toast]
+  );
 
   //getAcceptingMessage
   const getAcceptingMessage = useCallback(async () => {
@@ -84,17 +94,12 @@ export default function DashboardPage() {
       setIsSwitchLoading(true);
       const result = await axios.get<ApiResponse>("/api/accept-messages");
       setValue("acceptMessages", result.data.isAcceptingMessage);
-      toast({
-        title: result.data.message,
-        description: result.data.message,
-      });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error",
         description:
-          axiosError.response?.data.message ??
-          "Failed to update message status",
+          axiosError.response?.data.message ?? "Failed to get message status",
         variant: "destructive",
       });
     } finally {
@@ -117,6 +122,25 @@ export default function DashboardPage() {
 
   const copyProfileUrl = () => {
     navigator.clipboard.writeText(profileUrl);
+    if (ref.current !== null) {
+      ref?.current?.select();
+      ref.current.style.backgroundColor = "white";
+      ref.current.style.color = "black";
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      // Reset the background and text color after a delay
+      const newTimeoutId = setTimeout(() => {
+        if (ref.current !== null) {
+          ref.current.style.backgroundColor = "black";
+          ref.current.style.color = "white";
+          setTimeoutId(null);
+        }
+      }, 900);
+
+      setTimeoutId(newTimeoutId);
+    }
     toast({
       title: "Url copied Successfully",
     });
@@ -127,15 +151,20 @@ export default function DashboardPage() {
       <h1 className="text-3xl font-bold">User Dashboard</h1>
       {/* Copy Profile link   */}
       <div className="mt-4 my-4 ">
-        <p className="font-semibold text-lg">Copy Your Unique link</p>
-        <div className=" flex flex-row items-center">
+        <p className="font-semibold text-lg ">Copy Your Unique link</p>
+        <div className=" flex flex-col gap-2 md:flex-row items-center ">
           <input
-            className="w-full input input-bordered bg-transparent"
+            ref={ref}
+            className="w-full "
             type="text"
             value={profileUrl}
             disabled
           />
-          <Button className="ml-2" size={"default"} onClick={copyProfileUrl}>
+          <Button
+            className=" w-full md:ml-2 md:w-fit"
+            size={"default"}
+            onClick={copyProfileUrl}
+          >
             Copy
           </Button>
         </div>
@@ -154,7 +183,14 @@ export default function DashboardPage() {
       </div>
       {/* Refresh message btn */}
       <div>
-        <Button className="" size={"icon"} onClick={getAllMessages}>
+        <Button
+          className=""
+          size={"icon"}
+          onClick={(e) => {
+            e.preventDefault();
+            getAllMessages(true);
+          }}
+        >
           {loadingMessages ? (
             <>
               <Loader2 className="animate-spin  h-4 w-4" />
@@ -165,17 +201,30 @@ export default function DashboardPage() {
             </>
           )}
         </Button>
+
+        {/* {loading skeleton} */}
+        {session.user && loadingMessages && (
+          <div className="flex flex-col space-y-3 mt-6">
+            <Skeleton className="h-[125px] w-[250px] rounded-xl" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
+            </div>
+          </div>
+        )}
+
         {/* all messages */}
         <div className="grid grid-row md:grid-cols-2 mt-4">
-          {messages.length > 0 ? (
+          {messages.length > 0 &&
             messages.map((msg, i) => (
               <MessageCard
                 key={String(msg._id)}
                 message={msg}
                 onMessageDelete={handleDeleteMsg}
               />
-            ))
-          ) : (
+            ))}
+
+          {messages.length === 0 && !loadingMessages && (
             <p>No messages to display.</p>
           )}
         </div>

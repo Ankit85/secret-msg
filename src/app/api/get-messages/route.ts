@@ -41,10 +41,16 @@ export async function GET() {
     ]);
 
     console.log("user", user);
-    if (!user || user.length === 0) {
+    if (!user) {
       return Response.json(
         { success: false, message: "User not found" },
         { status: 404 }
+      );
+    }
+    if (user.length === 0) {
+      return Response.json(
+        { success: true, message: "No message to display" },
+        { status: 200 }
       );
     }
 
