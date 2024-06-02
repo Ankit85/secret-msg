@@ -1,13 +1,5 @@
 "use client";
-
 import { useState } from "react";
-
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import axios, { AxiosError } from "axios";
@@ -63,25 +55,15 @@ export default function InputOTPControlled() {
       <Input
         maxLength={6}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => setValue(e.target.value.trim())}
       />
-      {/* <InputOTP>
-        <InputOTPGroup className="mx-auto">
-          <InputOTPSlot index={0} />
-          <InputOTPSlot index={1} />
-          <InputOTPSlot index={2} />
-          <InputOTPSlot index={3} />
-          <InputOTPSlot index={4} />
-          <InputOTPSlot index={5} />
-        </InputOTPGroup>
-      </InputOTP> */}
 
       <Button
         onClick={verifyCode}
         // variant={"outline"}
         className={`text-center font-semibold  `}
         type="submit"
-        disabled={buttonDisabled}
+        disabled={buttonDisabled || value.length < 6}
       >
         {buttonDisabled ? (
           <>
@@ -94,4 +76,3 @@ export default function InputOTPControlled() {
     </div>
   );
 }
-// 137512
