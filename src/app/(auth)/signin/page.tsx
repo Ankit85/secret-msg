@@ -43,7 +43,7 @@ function Signup() {
         email: data.email,
         password: data.password,
       });
-      console.log("sigin respobnse rtto", response);
+
       if (response?.url) {
         router.push(`/dashboard`);
       } else {

@@ -29,7 +29,6 @@ import { ApiResponse } from "@/types/ApiResponse";
 import { toast } from "./ui/use-toast";
 
 type MessageProps = {
-  
   message: Message;
   onMessageDelete: (messageid: String) => void;
 };
@@ -43,8 +42,6 @@ export default function MessageCard({
       const result = await axios.delete<ApiResponse>(
         `/api/delete-message/${message._id}`
       );
-      console.log("response", result.data.success);
-      console.log("messafge id", message._id);
       onMessageDelete(message._id as String);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
