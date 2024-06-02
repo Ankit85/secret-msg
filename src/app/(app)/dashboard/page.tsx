@@ -155,7 +155,7 @@ export default function DashboardPage() {
         <div className=" flex flex-col gap-2 md:flex-row items-center ">
           <input
             ref={ref}
-            className="w-full "
+            className="w-full bg-transparent"
             type="text"
             value={profileUrl}
             disabled
