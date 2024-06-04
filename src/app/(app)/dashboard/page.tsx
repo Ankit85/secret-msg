@@ -216,7 +216,7 @@ export default function DashboardPage() {
         {/* all messages */}
         <div className="grid grid-row md:grid-cols-2 mt-4">
           {messages.length > 0 &&
-            messages.map((msg, i) => (
+            messages.map((msg) => (
               <MessageCard
                 key={String(msg._id)}
                 message={msg}
